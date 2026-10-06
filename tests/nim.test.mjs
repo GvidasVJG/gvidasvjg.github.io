@@ -6,7 +6,7 @@ function environment(){
   const elements=new Map();
   const element=id=>{if(!elements.has(id))elements.set(id,{innerHTML:'',innerText:'',classList:{add(){},remove(){},contains(){return false;},toggle(){}},dispatchEvent(){}});return elements.get(id);};
   const context=vm.createContext({document:{getElementById:element,querySelectorAll:()=>[]},console,setTimeout:()=>0,CustomEvent:class{},toggleAIlearning:true});
-  for(const file of ['player.js','ai.js','game.js'])vm.runInContext(readFileSync(new URL('../nim.ai/classes/'+file,import.meta.url),'utf8'),context);
+  for(const file of ['player.js','ai.js','game.js'])vm.runInContext(readFileSync(new URL('../priemones/nim.ai/classes/'+file,import.meta.url),'utf8'),context);
   vm.runInContext("let player1=new AI('nim.AI','lp','n');let player2=new Player('Žmogus');let game=new Game(11,player1,player2);game.player1=player1;game.player2=player2;",context);
   return context;
 }

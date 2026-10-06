@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {train,tokenize,probabilities,resolveWord,generate,distance,formatTokens} from '../vdslm/engine.mjs';
+import {train,tokenize,probabilities,resolveWord,generate,distance,formatTokens} from '../priemones/vdslm/engine.mjs';
 test('lietuviškos raidės, normalizavimas ir Python skyrybos skaidymas',()=>{
   assert.deepEqual(tokenize('ĄŽUOLAS, e\u0307žys. (taip) – ne'),['ąžuolas',',','ėžys','.','(','taip',')','–','ne']);
 });

@@ -21,7 +21,7 @@ Vartotojo pateiktas `modulo-clock.html`. Pridėta bendra grįžimo nuoroda ir pi
 
 ## Išsaugotos licencijos ir duomenys
 
-- `pavyzdys/LICENSE`: pradinė GNU GPL v3 licencija.
+- `priemones/pavyzdys/LICENSE`: pradinė GNU GPL v3 licencija.
 - `assets/vendor/LICENSE`: sql.js autorių MIT licencija; naudojama 1.13.0 versija iš oficialaus npm paketo. `sql-wasm.js` ir `sql-wasm.wasm` nekoreguoti. Šaltinis: https://github.com/sql-js/sql.js/tree/v1.13.0.
 - Kitų projektų kopijoms nepriskiriama nauja bendra licencija.
 - Originaliame VDSLM projekte esantis angliškų kūrinių tekstų rinkinys ir iš jo sudarytas modelis išsaugoti; naujoje sąsajoje pagal nutylėjimą naudojamas lietuviškas mokymo pavyzdys.
