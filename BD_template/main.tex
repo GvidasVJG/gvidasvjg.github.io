@@ -1,0 +1,145 @@
+% Specify the type of document, paper size, and font size
+\documentclass[12pt,a4paper]{article}
+
+% Set margins
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry} 
+
+% Set the font encoding to support a wider range of characters
+\usepackage[T1]{fontenc}
+
+% Set the input encoding to UTF-8 to support unicode characters
+\usepackage[utf8]{inputenc}
+
+% Set the language for the document
+\usepackage[lithuanian]{babel}
+
+% Set the default font to Times
+\usepackage{times}
+
+% Package for customizable section titles
+\usepackage{titlesec}
+
+% Package to indent the first paragraph of a section
+\usepackage{indentfirst}
+
+% Package to include graphics
+\usepackage{graphicx}
+
+% Package for improved float handling
+\usepackage{float}
+
+% Package to change line spacing
+\usepackage{setspace}
+
+% Package for fancy headers and footers
+\usepackage{fancyhdr}
+
+% Package to generate filler text
+\usepackage{lipsum}
+
+% Package to add bibliography/index/contents to Table of Contents
+\usepackage[nottoc,numbib]{tocbibind}
+
+% Package to add code listings
+\usepackage{listings}
+\usepackage{xcolor}
+
+%New colors defined below
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+%Code listing style named "mystyle"
+\lstdefinestyle{mystyle}{
+  backgroundcolor=\color{backcolour}, commentstyle=\color{codegreen},
+  keywordstyle=\color{magenta},
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codepurple},
+  basicstyle=\ttfamily\footnotesize,
+  breakatwhitespace=false,         
+  breaklines=true,                 
+  captionpos=b,                    
+  keepspaces=true,                 
+  numbers=left,                    
+  numbersep=5pt,                  
+  showspaces=false,                
+  showstringspaces=false,
+  showtabs=false,                  
+  tabsize=2
+}
+
+%"mystyle" code listing set
+\lstset{style=mystyle}
+
+% Package for lithuanian-style quotes
+\RequirePackage[style=lithuanian]{csquotes}
+
+% Package for bibliography
+\RequirePackage[
+    alldates=iso,
+    dateera=astronomical,
+    seconds=true,
+    autolang=other,
+    backend=biber,
+    sortcites=true,
+    sorting=nty,
+    style=numeric,
+    maxbibnames=99,
+    maxcitenames=1,
+    abbreviate=true,
+    minalphanames=3,
+    maxalphanames=3,
+    maxnames=9,
+    minnames=4,
+]{biblatex}
+
+% Add bibliography resource file
+\addbibresource{sources.bib}
+
+% Custom section title format
+\titleformat{\section}{\normalfont\fontsize{16}{19}\bfseries}{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{12pt plus 4pt minus 2pt}{12pt plus 2pt minus 2pt}
+
+% Set line spacing to 1.5
+\onehalfspacing
+
+% Footer setup for page numbers
+\fancyhf{} % Clear all header and footer fields
+\fancyfoot[R]{\thepage} % Page number in the right corner of the footer
+\renewcommand{\headrulewidth}{0pt} % No line in the header
+\renewcommand{\footrulewidth}{0pt} % No line in the footer
+\pagestyle{fancy}
+\fancypagestyle{plain}{ % For first page
+  \fancyhf{} % Clear all header and footer fields
+  \renewcommand{\headrulewidth}{0pt} % No line in the header
+  \renewcommand{\footrulewidth}{0pt} % No line in the footer
+}
+
+% Command for creating a signature place
+\newcommand{\signatureplace}{%
+    \parbox[t]{2.5cm}{%
+        \makebox[2.5cm]{\raisebox{-5ex}{\scriptsize
+        (para\v{s}as) }}}
+}
+
+% Set sections as level 1
+\setcounter{secnumdepth}{0}
+
+\begin{document}
+
+% Include various sections
+\input{titulinis}
+\pagenumbering{arabic}
+\tableofcontents
+
+\input{1_anotacija}
+\input{2_intro}
+\input{3_body}
+\input{4_isvados}
+\input{5_rekomendacijos}
+\input{6_bib}
+\input{7_priedai}
+\input{8_isivertinimas}
+
+\end{document}

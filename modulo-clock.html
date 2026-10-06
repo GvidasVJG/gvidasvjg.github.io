@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="lt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modulio laikrodis</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17324d;
+      --muted: #60758a;
+      --paper: #fffdf7;
+      --panel: #ffffff;
+      --blue: #2563eb;
+      --blue-dark: #1749b5;
+      --red: #e5484d;
+      --gold: #f5b942;
+      --line: #cbd8e6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 28px 18px;
+      display: grid;
+      place-items: center;
+      font-family: Inter, ui-rounded, "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 12%, #fff2bc 0 9%, transparent 27%),
+        radial-gradient(circle at 90% 90%, #dcecff 0 10%, transparent 28%),
+        var(--paper);
+    }
+
+    .app {
+      width: min(100%, 980px);
+      display: grid;
+      grid-template-columns: minmax(290px, 1fr) minmax(280px, 390px);
+      gap: clamp(24px, 5vw, 58px);
+      align-items: center;
+      padding: clamp(22px, 5vw, 52px);
+      background: color-mix(in srgb, var(--panel) 94%, transparent);
+      border: 1px solid #e6edf5;
+      border-radius: 30px;
+      box-shadow: 0 22px 65px rgb(35 64 95 / 14%);
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(2rem, 5vw, 3.3rem);
+      line-height: 1;
+      letter-spacing: -0.045em;
+    }
+
+    .intro {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .clock-wrap {
+      width: min(100%, 480px);
+      margin-inline: auto;
+    }
+
+    #clock {
+      display: block;
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 12px 14px rgb(23 50 77 / 14%));
+    }
+
+    .clock-face {
+      fill: #fffefb;
+      stroke: var(--ink);
+      stroke-width: 8;
+    }
+
+    .tick {
+      stroke: #91a7bd;
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+
+    .tick.zero { stroke: var(--gold); stroke-width: 7; }
+
+    .clock-number {
+      fill: var(--ink);
+      font-size: 22px;
+      font-weight: 750;
+      text-anchor: middle;
+      dominant-baseline: central;
+      user-select: none;
+    }
+
+    .clock-number.zero { fill: #a55b00; }
+
+    #hand {
+      transform-box: view-box;
+      transform-origin: 210px 210px;
+    }
+
+    .hand-shadow {
+      stroke: rgb(23 50 77 / 16%);
+      stroke-width: 13;
+      stroke-linecap: round;
+      transform: translate(3px, 4px);
+    }
+
+    .hand-line {
+      stroke: var(--red);
+      stroke-width: 9;
+      stroke-linecap: round;
+    }
+
+    .hand-tip { fill: var(--red); }
+    .pin-outer { fill: var(--ink); }
+    .pin-inner { fill: white; }
+
+    .controls {
+      display: grid;
+      gap: 17px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 12px;
+    }
+
+    [hidden] { display: none !important; }
+
+    label.field {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 750;
+      letter-spacing: 0.055em;
+      text-transform: uppercase;
+    }
+
+    .numeric-input {
+      width: 100%;
+      min-width: 0;
+      padding: 13px 12px;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      color: var(--ink);
+      background: white;
+      font: inherit;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+    }
+
+    .numeric-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgb(37 99 235 / 13%);
+    }
+
+    .numeric-input.is-concealed {
+      letter-spacing: 0.18em;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      color: var(--ink);
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .toggle input {
+      width: 1.15rem;
+      height: 1.15rem;
+      accent-color: var(--blue);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px 20px;
+      flex-wrap: wrap;
+    }
+
+    .mode-switch input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+
+    .switch-track {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #a9b9c9;
+      transition: background 160ms ease;
+    }
+
+    .switch-track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 1px 4px rgb(23 50 77 / 25%);
+      transition: transform 160ms ease;
+    }
+
+    .mode-switch input:checked + .switch-track { background: var(--blue); }
+    .mode-switch input:checked + .switch-track::after { transform: translateX(20px); }
+    .mode-switch input:focus-visible + .switch-track {
+      outline: 4px solid rgb(37 99 235 / 22%);
+      outline-offset: 2px;
+    }
+
+    .equation-card {
+      min-height: 126px;
+      padding: 18px;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 7px;
+      border: 2px dashed #b9cbe0;
+      border-radius: 18px;
+      background: #f7fbff;
+      text-align: center;
+    }
+
+    .equation {
+      font-size: clamp(1.55rem, 5vw, 2.25rem);
+      font-weight: 850;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hidden-number {
+      display: inline-grid;
+      min-width: 1.4em;
+      place-items: center;
+      color: var(--blue);
+      border-bottom: 3px solid currentColor;
+    }
+
+    .journey {
+      min-height: 1.4em;
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px 20px;
+      border: 0;
+      border-radius: 13px;
+      color: white;
+      background: var(--blue);
+      box-shadow: 0 6px 0 var(--blue-dark);
+      font: inherit;
+      font-size: 1.08rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+
+    button:hover { background: #1d57d8; }
+    button:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--blue-dark); }
+    button:focus-visible { outline: 4px solid rgb(37 99 235 / 24%); outline-offset: 3px; }
+
+    .status {
+      min-height: 1.5em;
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .hint {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 14px; }
+      .app { grid-template-columns: 1fr; padding: 22px; border-radius: 22px; }
+      .clock-wrap { max-width: 390px; }
+      .controls { max-width: 460px; width: 100%; margin-inline: auto; }
+    }
+
+    @media (max-width: 380px) {
+      .field-row { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      button { transition: none; }
+    }
+  </style>
+<link rel="stylesheet" href="assets/tool-nav.css"><link rel="icon" href="assets/favicon.svg"></head>
+<body>
+  <main class="app">
+    <section aria-labelledby="page-title">
+      <h1 id="page-title">Modulio laikrodis</h1>
+      <p class="intro">Skaičiuok aplink laikrodį ir pažiūrėk, kur sustos rodyklė.</p>
+
+      <div class="clock-wrap">
+        <svg id="clock" viewBox="0 0 420 420" role="img" aria-labelledby="clock-title clock-desc">
+          <title id="clock-title">Modulio laikrodis</title>
+          <desc id="clock-desc">Laikrodis, kurio rodyklė rodo dalybos liekaną.</desc>
+          <circle class="clock-face" cx="210" cy="210" r="194" />
+          <g id="ticks" aria-hidden="true"></g>
+          <g id="numbers" aria-hidden="true"></g>
+          <g id="hand" aria-hidden="true">
+            <line class="hand-shadow" x1="210" y1="218" x2="210" y2="83" />
+            <line class="hand-line" x1="210" y1="218" x2="210" y2="83" />
+            <path class="hand-tip" d="M 210 66 L 199 89 L 221 89 Z" />
+          </g>
+          <circle class="pin-outer" cx="210" cy="210" r="14" />
+          <circle class="pin-inner" cx="210" cy="210" r="5" />
+        </svg>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Laikrodžio valdikliai">
+      <div class="field-row">
+        <label class="field" for="number-input">
+          <span id="number-label">Skaičius</span>
+          <input id="number-input" class="numeric-input" type="number" value="14" step="1" inputmode="numeric" autocomplete="off">
+        </label>
+
+        <label id="exponent-field" class="field" for="exponent-input" hidden>
+          Laipsnio rodiklis
+          <input id="exponent-input" class="numeric-input" type="number" value="2" min="0" max="20" step="1" inputmode="numeric" autocomplete="off">
+        </label>
+
+        <label class="field" for="size-input">
+          Laikrodžio padalos
+          <input id="size-input" class="numeric-input" type="number" value="12" min="2" max="24" step="1" inputmode="numeric">
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <label class="toggle" for="show-number">
+          <input id="show-number" type="checkbox" checked>
+          <span id="show-number-label">Rodyti įvestą skaičių</span>
+        </label>
+
+        <label id="show-exponent-control" class="toggle" for="show-exponent" hidden>
+          <input id="show-exponent" type="checkbox" checked>
+          Rodyti laipsnio rodiklį
+        </label>
+
+        <label class="toggle mode-switch" for="exponent-mode">
+          <input id="exponent-mode" type="checkbox" role="switch">
+          <span class="switch-track" aria-hidden="true"></span>
+          Laipsnio režimas
+        </label>
+      </div>
+
+      <div class="equation-card">
+        <div id="equation" class="equation" aria-live="polite"></div>
+        <p id="journey" class="journey"></p>
+      </div>
+
+      <button id="animate-button" type="button">Animuoti rodyklę</button>
+      <p id="status" class="status" role="status" aria-live="polite">Pasiruošta skaičiuoti.</p>
+      <p class="hint">Patarimas: išbandyk 14 su 12 padalų laikrodžiu arba įjunk laipsnio režimą ir išbandyk 2³.</p>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const SVG_NS = "http://www.w3.org/2000/svg";
+      const numberInput = document.querySelector("#number-input");
+      const numberLabel = document.querySelector("#number-label");
+      const exponentInput = document.querySelector("#exponent-input");
+      const exponentField = document.querySelector("#exponent-field");
+      const exponentModeInput = document.querySelector("#exponent-mode");
+      const sizeInput = document.querySelector("#size-input");
+      const showNumberInput = document.querySelector("#show-number");
+      const showNumberLabel = document.querySelector("#show-number-label");
+      const showExponentInput = document.querySelector("#show-exponent");
+      const showExponentControl = document.querySelector("#show-exponent-control");
+      const animateButton = document.querySelector("#animate-button");
+      const equation = document.querySelector("#equation");
+      const journey = document.querySelector("#journey");
+      const status = document.querySelector("#status");
+      const ticks = document.querySelector("#ticks");
+      const numbers = document.querySelector("#numbers");
+      const hand = document.querySelector("#hand");
+      const clockDesc = document.querySelector("#clock-desc");
+
+      let activeAnimation = null;
+
+      function readValues() {
+        const rawNumber = Number(numberInput.value);
+        const rawExponent = Number(exponentInput.value);
+        const rawSize = Number(sizeInput.value);
+        const value = Number.isFinite(rawNumber) ? Math.trunc(rawNumber) : 0;
+        const exponent = Number.isFinite(rawExponent) ? Math.min(20, Math.max(0, Math.trunc(rawExponent))) : 2;
+        const size = Number.isFinite(rawSize) ? Math.min(24, Math.max(2, Math.trunc(rawSize))) : 12;
+        const exponentMode = exponentModeInput.checked;
+        return { value, exponent, size, exponentMode };
+      }
+
+      function modulo(value, size) {
+        return ((value % size) + size) % size;
+      }
+
+      function modularPower(base, exponent, size) {
+        let result = 1 % size;
+        let factor = modulo(base, size);
+
+        for (let power = 0; power < exponent; power += 1) {
+          result = modulo(result * factor, size);
+        }
+
+        return result;
+      }
+
+      function pointAt(angleDegrees, radius) {
+        const radians = (angleDegrees - 90) * Math.PI / 180;
+        return {
+          x: 210 + Math.cos(radians) * radius,
+          y: 210 + Math.sin(radians) * radius
+        };
+      }
+
+      function svgElement(name, attributes = {}) {
+        const element = document.createElementNS(SVG_NS, name);
+        Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+        return element;
+      }
+
+      function drawFace(size) {
+        ticks.replaceChildren();
+        numbers.replaceChildren();
+
+        const labelRadius = size > 18 ? 150 : 148;
+        const fontSize = size > 20 ? 16 : size > 14 ? 19 : 22;
+
+        for (let position = 0; position < size; position += 1) {
+          const angle = position * 360 / size;
+          const tickStart = pointAt(angle, 174);
+          const tickEnd = pointAt(angle, position === 0 ? 190 : 185);
+          const labelPoint = pointAt(angle, labelRadius);
+
+          const tick = svgElement("line", {
+            x1: tickStart.x,
+            y1: tickStart.y,
+            x2: tickEnd.x,
+            y2: tickEnd.y,
+            class: position === 0 ? "tick zero" : "tick"
+          });
+
+          const label = svgElement("text", {
+            x: labelPoint.x,
+            y: labelPoint.y,
+            class: position === 0 ? "clock-number zero" : "clock-number"
+          });
+          label.style.fontSize = `${fontSize}px`;
+          label.textContent = position;
+
+          ticks.append(tick);
+          numbers.append(label);
+        }
+      }
+
+      function lithuanianForm(number, one, few, many) {
+        const absolute = Math.abs(number);
+        const lastTwo = absolute % 100;
+        const last = absolute % 10;
+
+        if (last === 1 && lastTwo !== 11) return one;
+        if (last >= 2 && last <= 9 && (lastTwo < 11 || lastTwo > 19)) return few;
+        return many;
+      }
+
+      function journeyText(value, size) {
+        if (value === 0) return "Nė vieno žingsnio – rodyklė lieka ties 0.";
+
+        const turns = Math.floor(Math.abs(value) / size);
+        const extraSteps = Math.abs(value) % size;
+        const direction = value < 0 ? "prieš laikrodžio rodyklę" : "pagal laikrodžio rodyklę";
+        const parts = [];
+
+        if (turns) {
+          parts.push(`${turns} ${lithuanianForm(turns, "pilnas apsisukimas", "pilni apsisukimai", "pilnų apsisukimų")}`);
+        }
+        if (extraSteps || !turns) {
+          parts.push(`${extraSteps} ${lithuanianForm(extraSteps, "papildomas žingsnis", "papildomi žingsniai", "papildomų žingsnių")}`);
+        }
+
+        const stepWord = lithuanianForm(value, "žingsnis", "žingsniai", "žingsnių");
+        return `${Math.abs(value)} ${stepWord} ${direction}: ${parts.join(" + ")}.`;
+      }
+
+      function updateExplanation(value, exponent, size, exponentMode) {
+        const countedValue = exponentMode ? value ** exponent : value;
+        const result = exponentMode ? modularPower(value, exponent, size) : modulo(value, size);
+        const baseIsShown = showNumberInput.checked;
+        const exponentIsShown = showExponentInput.checked;
+        const hiddenValue = '<span class="hidden-number" aria-label="paslėptas skaičius">?</span>';
+        const baseTerm = baseIsShown ? String(value) : hiddenValue;
+        const exponentTerm = exponentIsShown ? String(exponent) : "?";
+        const firstTerm = exponentMode
+          ? `${baseTerm}<sup>${exponentTerm}</sup>`
+          : baseTerm;
+
+        equation.innerHTML = `${firstTerm} <span aria-label="modulis">mod</span> ${size} = ${result}`;
+        if (!baseIsShown || (exponentMode && !exponentIsShown)) {
+          journey.textContent = "Viena reikšmė paslėpta. Stebėk rodyklę, kad pamatytum visą jos kelią.";
+        } else if (exponentMode && Number.isSafeInteger(countedValue)) {
+          journey.textContent = `${value} ^ ${exponent} = ${countedValue}. ${journeyText(countedValue, size)}`;
+        } else if (exponentMode) {
+          journey.textContent = `${value} ^ ${exponent} yra labai didelis skaičius. Modulio rezultatas vis tiek apskaičiuotas tiksliai.`;
+        } else {
+          journey.textContent = journeyText(value, size);
+        }
+        clockDesc.textContent = `Laikrodis su ${size} padalomis. Rodyklė rodo ${result}.`;
+        return { result, countedValue };
+      }
+
+      function updateNumberVisibility() {
+        const baseIsShown = showNumberInput.checked;
+        const exponentIsShown = showExponentInput.checked;
+        numberInput.type = baseIsShown ? "number" : "password";
+        exponentInput.type = exponentIsShown ? "number" : "password";
+        numberInput.classList.toggle("is-concealed", !baseIsShown);
+        exponentInput.classList.toggle("is-concealed", !exponentIsShown);
+        numberInput.setAttribute(
+          "aria-label",
+          baseIsShown ? "Skaičius" : "Skaičius paslėptas"
+        );
+        exponentInput.setAttribute(
+          "aria-label",
+          exponentIsShown ? "Laipsnio rodiklis" : "Laipsnio rodiklis paslėptas"
+        );
+      }
+
+      function updateMode() {
+        const exponentMode = exponentModeInput.checked;
+        exponentField.hidden = !exponentMode;
+        showExponentControl.hidden = !exponentMode;
+        numberLabel.textContent = exponentMode ? "Laipsnio pagrindas" : "Skaičius";
+        showNumberLabel.textContent = exponentMode ? "Rodyti laipsnio pagrindą" : "Rodyti įvestą skaičių";
+      }
+
+      function stopAnimation() {
+        if (activeAnimation) {
+          activeAnimation.cancel();
+          activeAnimation = null;
+        }
+      }
+
+      function showResultWithoutAnimation() {
+        stopAnimation();
+        const { value, exponent, size, exponentMode } = readValues();
+        drawFace(size);
+        const { result } = updateExplanation(value, exponent, size, exponentMode);
+        hand.style.transform = `rotate(${result * 360 / size}deg)`;
+        status.textContent = "Pasiruošta skaičiuoti.";
+      }
+
+      function animateHand() {
+        stopAnimation();
+        const { value, exponent, size, exponentMode } = readValues();
+
+        numberInput.value = value;
+        exponentInput.value = exponent;
+        sizeInput.value = size;
+        drawFace(size);
+        const { result, countedValue } = updateExplanation(value, exponent, size, exponentMode);
+        const canShowEveryTurn = Number.isSafeInteger(countedValue) && Math.abs(countedValue) <= 10000;
+        const directionSign = countedValue < 0 ? -1 : 1;
+        const degrees = canShowEveryTurn
+          ? countedValue * 360 / size
+          : directionSign * 5 * 360 + result * 360 / size;
+        const direction = countedValue < 0 ? "prieš laikrodžio rodyklę" : "pagal laikrodžio rodyklę";
+        const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const visibleSteps = canShowEveryTurn ? Math.abs(countedValue) : size * 5 + result;
+        const duration = reduceMotion ? 1 : Math.min(6500, Math.max(700, visibleSteps * 210));
+
+        hand.style.transform = "rotate(0deg)";
+        const requiredValuesAreShown = showNumberInput.checked && (!exponentMode || showExponentInput.checked);
+        if (!requiredValuesAreShown) {
+          status.textContent = "Skaičiuojama naudojant paslėptą reikšmę…";
+        } else if (!canShowEveryTurn) {
+          status.textContent = "Šis laipsnis per didelis, kad būtų parodytas kiekvienas apsisukimas – rodoma sutrumpinta kelionė…";
+        } else {
+          const stepWord = lithuanianForm(countedValue, "žingsnis", "žingsniai", "žingsnių");
+          status.textContent = countedValue === 0
+            ? "Rodyklė lieka ties nuliu…"
+            : `Skaičiuojama: ${Math.abs(countedValue)} ${stepWord} ${direction}…`;
+        }
+
+        activeAnimation = hand.animate(
+          [
+            { transform: "rotate(0deg)" },
+            { transform: `rotate(${degrees}deg)` }
+          ],
+          { duration, easing: "cubic-bezier(.45,.05,.25,1)", fill: "forwards" }
+        );
+
+        const thisAnimation = activeAnimation;
+        thisAnimation.finished.then(() => {
+          if (activeAnimation !== thisAnimation) return;
+          hand.style.transform = `rotate(${result * 360 / size}deg)`;
+          thisAnimation.cancel();
+          activeAnimation = null;
+          status.textContent = `Rodyklė sustojo ties ${result}.`;
+        }).catch(() => {
+          // Cancellation is expected when a new animation starts.
+        });
+      }
+
+      animateButton.addEventListener("click", animateHand);
+
+      [numberInput, exponentInput, sizeInput].forEach((input) => {
+        input.addEventListener("input", showResultWithoutAnimation);
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") animateHand();
+        });
+      });
+
+      showNumberInput.addEventListener("change", () => {
+        const { value, exponent, size, exponentMode } = readValues();
+        updateNumberVisibility();
+        updateExplanation(value, exponent, size, exponentMode);
+      });
+
+      showExponentInput.addEventListener("change", () => {
+        const { value, exponent, size, exponentMode } = readValues();
+        updateNumberVisibility();
+        updateExplanation(value, exponent, size, exponentMode);
+      });
+
+      exponentModeInput.addEventListener("change", () => {
+        updateMode();
+        showResultWithoutAnimation();
+      });
+
+      updateMode();
+      updateNumberVisibility();
+      showResultWithoutAnimation();
+    })();
+  </script>
+<a id="lab-home" href="index.html#priemones">← Visos priemonės</a></body>
+</html>

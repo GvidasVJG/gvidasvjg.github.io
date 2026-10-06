@@ -1,0 +1,40 @@
+const {chromium}=require('playwright');
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+(async()=>{
+ const browser=await chromium.launch({executablePath:process.env.BROWSER_EXECUTABLE || undefined,headless:true});
+ const page=await browser.newPage({viewport:{width:1440,height:1000}});
+ const failures=[];page.on('pageerror',e=>failures.push(page.url()+': '+e.message));page.on('response',r=>{if(r.status()>=400)failures.push(r.status()+' '+r.url());});page.on('dialog',d=>d.accept());
+ const base=process.env.TEST_BASE_URL || 'http://127.0.0.1:4173';
+ const output=path.resolve(__dirname,'../test-results');fs.mkdirSync(output,{recursive:true});
+ await page.goto(base);assert.equal(await page.locator('.tool-card:visible').count(),11);
+ await page.getByRole('button',{name:'Dirbtinis intelektas',exact:true}).click();assert.equal(await page.locator('.tool-card:visible').count(),2);
+ await page.getByRole('button',{name:'Visos priemonės',exact:true}).click();await page.locator('#search').fill('sablonas');assert.equal(await page.locator('.tool-card:visible').count(),1);
+ await page.locator('#search').fill('nerandamasxyz');assert.equal(await page.locator('#empty').isVisible(),true);await page.locator('#clear-filters').click();
+ await page.screenshot({path:path.join(output,'home-desktop.png'),fullPage:true});
+ console.log('Katalogas: 11 priemonių, filtrai ir lietuviška paieška veikia.');
+ await page.goto(base+'/vdslm/');await page.locator('#train').click();await page.locator('#generate:enabled').waitFor();
+ await page.locator('#seed').fill('mokinys');await page.locator('#length').fill('30');await page.locator('#generate').click();await page.locator('#download:enabled').waitFor();assert.ok((await page.locator('#generated').textContent()).length>30);
+ await page.locator('#seed').fill('mokinysx');await page.locator('#inspect').click();await page.waitForFunction(()=>document.getElementById('prob-caption').textContent.includes('panašiausias'));
+ await page.screenshot({path:path.join(output,'vdslm-desktop.png'),fullPage:true});
+ await page.locator('#training-text').fill('vienas');assert.equal(await page.locator('#generate').isDisabled(),true);await page.locator('#train').click();await page.waitForFunction(()=>document.getElementById('training-status').textContent.includes('bent du'));
+ console.log('VDSLM: apmokymas, generavimas, nežinomas žodis ir tuščio modelio apsauga veikia.');
+ await page.goto(base+'/edu-db/');await page.locator('#run:enabled').waitFor();await page.locator('#run').click();await page.locator('#results tbody tr').first().waitFor();const customers=await page.locator('#results tbody tr').count();assert.ok(customers>0);
+ await page.locator('#examples').selectOption('totals');await page.locator('#run').click();await page.waitForFunction(()=>document.getElementById('sql-status').textContent.includes('įvykdyta'));assert.ok(await page.locator('#results tbody tr').count()>0);
+ await page.locator('#query').fill('SELECT * FROM neegzistuoja;');await page.locator('#run').click();await page.waitForFunction(()=>document.getElementById('sql-status').classList.contains('error'));
+ await page.locator('#query').fill('DELETE FROM Customers;');await page.locator('#run').click();await page.locator('#run:enabled').waitFor();await page.locator('#restore').click();await page.locator('#run:enabled').waitFor();await page.locator('#query').fill('SELECT * FROM Customers;');await page.locator('#run').click();await page.locator('#results tbody tr').first().waitFor();assert.equal(await page.locator('#results tbody tr').count(),customers);
+ console.log('SQL: pradinė bazė, JOIN, klaidos ir atkūrimas veikia.');
+ await page.goto(base+'/Simple-CPU/');await page.locator('#toggleEditorButton').click();await page.locator('#assemblyInput').fill('MOV R0, 02\nADD R0, 03\nOUT R0\nHLT');await page.locator('#assembleButton').click();for(let i=0;i<4;i++)await page.locator('#stepButton').click();assert.equal(await page.locator('#R0').textContent(),'05');assert.ok((await page.locator('#outputField').textContent()).includes('5'));await page.locator('#helpButton').click();assert.ok((await page.locator('.modal-body').textContent()).includes('Komandų rinkinys'));await page.locator('#closeHelp').click();console.log('Procesorius: surinkimas, 4 komandos ir lietuviška pagalba veikia.');
+ await page.goto(base+'/septyni-segmentai/');await page.locator('#hexIn').fill('FF');await page.locator('#hexApply').click();assert.equal(await page.locator('#hexOut').textContent(),'0xFF');await page.locator('#bitsSelect').selectOption('4');await page.locator('#hexIn').fill('FFFFFFFF');await page.locator('#hexApply').click();assert.equal(await page.locator('#hexOut').textContent(),'0xFFFFFFFF');console.log('Ekranėlis: 1 ir 4 bitų režimų įvestis veikia.');
+ await page.goto(base+'/modulo-clock.html');await page.locator('#number-input').fill('14');assert.ok((await page.locator('#equation').textContent()).includes('2'));await page.locator('label.mode-switch').click();assert.equal(await page.locator('#exponent-input').isVisible(),true);console.log('Modulio laikrodis: įvestis ir laipsnių režimas veikia.');
+ await page.goto(base+'/mastermind/');assert.equal(await page.locator('.guess-row:visible').count(),1);await page.locator('label[for="gameMode"]').click();assert.equal(await page.locator('#codeCreationContainer').isVisible(),true);await page.locator('#resetBtn').click();console.log('Mastermind: vieno ir dviejų žaidėjų režimai atveriami.');
+ await page.goto(base+'/nim.ai/');await page.locator('#reset').click();await page.waitForFunction(()=>Number(document.getElementById('display').textContent)<11);assert.ok(Number(await page.locator('#display').textContent())>=8);await page.locator('#btn2_1').click();console.log('Nim: kompiuteris ir žmogus atlieka ėjimą.');
+ await page.goto(base+'/pavyzdys/');await page.locator('#number').fill('3');await page.getByRole('button',{name:'Patikrinti'}).click();assert.equal(await page.locator('#foo-output').textContent(),'Foo');
+ await page.goto(base+'/report-template-vjg/');const tours=await page.locator('.step-links a').evaluateAll(links=>links.map(a=>a.href));for(const url of tours){await page.goto(url);const count=await page.locator('.tour-step').count();assert.ok(count>0);if(count>1){await page.locator('#next').click();assert.ok((await page.locator('#tour-count').textContent()).startsWith('2 '));}assert.equal(await page.locator('img').evaluateAll(imgs=>imgs.filter(i=>!i.complete||i.naturalWidth===0).length),0);}console.log('Rašto darbo rengimas: visos 13 temų ir jų nuotraukos veikia.');
+ const mobile=await browser.newPage({viewport:{width:390,height:844}});mobile.on('pageerror',e=>failures.push(e.message));
+ for(const route of ['/','/vdslm/','/edu-db/','/mastermind/','/Simple-CPU/','/nim.ai/','/septyni-segmentai/','/modulo-clock.html','/html-pavyzdys/','/BD_template/']){
+  await mobile.goto(base+route);const overflow=await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2);if(overflow)failures.push('Telefonas: horizontali slinktis '+route);if(route==='/')await mobile.screenshot({path:path.join(output,'home-mobile.png'),fullPage:true});
+ }
+ console.log('Telefono vaizdai patikrinti.');
+ await browser.close();
+ if(failures.length){console.error(failures.join('\n'));process.exitCode=1;}else console.log('Visos naršyklės patikros sėkmingos.');
+})().catch(e=>{console.error(e);process.exit(1);});

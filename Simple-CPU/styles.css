@@ -1,0 +1,207 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.controls {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.controls button, .controls input[type="range"] {
+    margin: 5px;
+}
+
+.main-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.left-column {
+    flex: 1;
+    min-width: 300px;
+    margin-right: 20px;
+}
+
+.panel {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.compact {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 10px;
+}
+
+.status-bar {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.memory-panel {
+    flex: 2;
+    min-width: 300px;
+}
+
+.code-editor {
+    display: flex;
+}
+
+.line-numbers {
+    background-color: #f0f0f0;
+    padding: 5px;
+    text-align: right;
+    user-select: none;
+}
+
+.line-numbers br {
+    line-height: 1.2em;
+}
+
+textarea {
+    width: 100%;
+    height: 200px;
+    font-family: monospace;
+    resize: vertical;
+}
+
+#outputField {
+    background-color: #f0f0f0;
+    padding: 5px;
+    min-height: 50px;
+    white-space: pre-wrap;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 5px;
+    text-align: center;
+}
+
+#memoryTable td, #memoryTable th {
+    width: 2.5em;
+    height: 2em;
+}
+
+/* Highlight colors */
+.highlight-change {
+    background-color: yellow;
+}
+
+.highlight-opcode {
+    background-color: lightblue;
+}
+
+/* Legend styling */
+.legend {
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+.legend.change-highlight {
+    background-color: yellow;
+}
+
+.legend.opcode-highlight {
+    background-color: lightblue;
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-height: 80%; /* Adjust as needed */
+    overflow-y: auto; /* Enable vertical scroll */
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-body {
+    max-height: calc(100vh - 200px); /* Adjust as needed */
+    overflow-y: auto;
+}
+
+table {
+    margin: 10px 0;
+}
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+pre {
+    background-color: #f0f0f0;
+    padding: 10px;
+}
+
+/* Adjust code editor styles */
+.code-editor textarea {
+    flex: 1;
+    height: 200px;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.2em;
+    padding: 5px;
+}
+
+.code-editor .line-numbers {
+    padding-right: 10px;
+    border-right: 1px solid #ccc;
+}
+
+.code-editor .line-numbers {
+    min-width: 30px;
+}
+
+/* Speed Slider */
+.controls input[type="range"] {
+    vertical-align: middle;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+body{padding-bottom:70px;background:#f7f8f3;color:#17322f}button{padding:9px 12px;cursor:pointer}textarea{box-sizing:border-box}#memoryContainer{overflow:auto}.memory-panel{min-width:0}.main-grid>*{min-width:0}.left-column{min-width:280px}.panel{background:white;border-radius:8px}.controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:center}.modal{z-index:1000}.modal-content{box-sizing:border-box}.modal-body pre{overflow:auto}@media(max-width:700px){body{padding:14px 14px 70px}.main-grid{display:block}.left-column{margin-right:0}.memory-panel{width:auto}.modal-content{width:96%}}

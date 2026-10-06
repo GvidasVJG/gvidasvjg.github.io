@@ -1,0 +1,1 @@
+document.getElementById('foo-form').addEventListener('submit',event=>{event.preventDefault();const n=Number(document.getElementById('number').value);document.getElementById('foo-output').textContent=n%15===0?'Foo Bar':n%3===0?'Foo':n%5===0?'Bar':String(n);});
