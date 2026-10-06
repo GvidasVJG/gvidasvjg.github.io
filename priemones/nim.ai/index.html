@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="lt">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Nim ir besimokantis DI</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../../assets/tool-nav.css"><link rel="icon" href="../../assets/favicon.svg"></head>
+
+<body>
+    <button class="info-button" onclick="moreinfo()" aria-label="Rodyti paaiškinimus">ⓘ</button>
+    <div class="controller" style="position:fixed; right:10px; top: 10px; cursor:pointer;">
+        <button type="button" onclick="AIplayer()">
+            Antras žaidėjas žmogus<span id="AI_toggle" style="font-size: 20pt; display: flex; align-items: center; justify-content: center;">
+                <span>Įjungta</span>
+            </span>
+        </button>
+        <button type="button" onclick="AIlearning()" id="toggle_learning_div">
+            DI mokosi<span id="AI_toggle_learning" style="font-size: 20pt; display: flex; align-items: center; justify-content: center;">
+                <span>Įjungta</span>
+            </span>
+        </button>
+    </div>
+        
+    <div class="container"><h1 style="font-size:24px;text-align:center">Nim ir besimokantis DI</h1><p class="rules">Paimk 1, 2 arba 3 degtukus. Laimi tas, kas varžovui palieka paskutinį degtuką. Spausk ▶ ir pradėk.</p>
+        <div style="display:grid; place-items:center;">
+            <div class="hidden" name="info_item">Žaidimą visada pradeda nim.AI (kompiuteris)</div>
+            <div id="display">11</div>
+            <div id="matches"></div>
+            <div class="hidden" name="info_item">Likusių degtukų skaičius</div>
+            <div id="moves1" class="row">
+                <div id="btn1_1" class="btn">1</div>
+                <div id="select1" style="display:none"></div>
+                <div id="btn1_2" class="btn">2</div>
+                <div id="select2" style="display:none"></div>
+                <div id="btn1_3" class="btn">3</div>
+                <div id="select3" style="display:none"></div>
+            </div>
+            <div class="row hidden" id="moves2">
+                <div id="btn2_1" class="btn">1</div>
+                <div id="select1" style="display:none"></div>
+                <div id="btn2_2" class="btn">2</div>
+                <div id="select2" style="display:none"></div>
+                <div id="btn2_3" class="btn">3</div>
+                <div id="select3" style="display:none"></div>
+            </div>
+            <div class="hidden" name="info_item">Galimų paimti degtukų skaičius</div>
+            <div id="reset" class="btn" style="margin: 10px 0;">&#9658;</div>
+            <div class="hidden" name="info_item">Pradėti žaidimą iš naujo (neperkrauna nim.AI būsenų)</div>
+            <div id="win_table" style="margin: 10px 0;">
+                <table>
+                    <tr>
+                        <td id="player_1">nim.AI:</td>
+                        <td id="player1_wins">0</td>
+                    </tr>
+                    <tr>
+                        <td id="player_2">Žmogus:</td>
+                        <td id="player2_wins">0</td>
+                    </tr>
+                    <tr class="hidden" name="info_item">
+                        <th colspan="2">Laimėjimai</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div id="ai1" class="hidden" name="info_item"></div>
+        <div class="states" id="states1"></div>
+
+        <div id="ai2" class="hidden" name="info_item"></div>
+        <div class="states" id="states2"></div>
+    </div>
+    <div id="enableAI1" style="display:none"></div>
+    <div id="enableAI2" style="display:none"></div>
+    <div id="resignAI1" style="display:none"></div>
+    <div id="resignAI2" style="display:none"></div>
+
+    <script src="helpers.js"></script>
+    <script src="classes/player.js"></script>
+    <script src="classes/ai.js"></script>
+    <script src="classes/game.js"></script>
+    <script src="script.js"></script>
+<a id="lab-home" href="../../index.html#priemones">← Visos priemonės</a></body>
+
+</html>

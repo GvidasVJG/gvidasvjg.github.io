@@ -7,17 +7,17 @@ Visos priemonės ir jų failai laikomi šioje vienoje saugykloje. Atskirų proje
 
 | Aplankas arba failas | Turinys |
 | --- | --- |
-| `mastermind/` | Spalvų kodo spėjimo žaidimas |
-| `nim.ai/` | Degtukų žaidimas su besimokančiu DI |
-| `vdslm/` | Kalbos modelio apmokymas ir teksto generavimas naršyklėje |
-| `Simple-CPU/` | Procesoriaus simuliatorius su lietuviška pagalba |
-| `septyni-segmentai/` | Ekranėlio segmentai ir dvejetainis kodavimas |
+| `priemones/mastermind/` | Spalvų kodo spėjimo žaidimas |
+| `priemones/nim.ai/` | Degtukų žaidimas su besimokančiu DI |
+| `priemones/vdslm/` | Kalbos modelio apmokymas ir teksto generavimas naršyklėje |
+| `priemones/Simple-CPU/` | Procesoriaus simuliatorius su lietuviška pagalba |
+| `priemones/septyni-segmentai/` | Ekranėlio segmentai ir dvejetainis kodavimas |
 | `modulo-clock.html` | Modulio laikrodis ir laipsnių liekanos |
-| `pavyzdys/` | „Python“, dalumo sąlygos ir „Git“ pradmenys |
-| `html-pavyzdys/` | Lietuviškas HTML pavyzdys ir jo paaiškinimas |
-| `edu-db/` | SQL laboratorija ir originali SQLite bazė |
-| `report-template-vjg/` | 13 vaizdinių dokumento formatavimo temų |
-| `BD_template/` | Kelių failų „LaTeX“ brandos darbo šablonas |
+| `priemones/pavyzdys/` | „Python“, dalumo sąlygos ir „Git“ pradmenys |
+| `priemones/html-pavyzdys/` | Lietuviškas HTML pavyzdys ir jo paaiškinimas |
+| `priemones/edu-db/` | SQL laboratorija ir originali SQLite bazė |
+| `priemones/report-template-vjg/` | 13 vaizdinių dokumento formatavimo temų |
+| `priemones/BD_template/` | Kelių failų „LaTeX“ brandos darbo šablonas |
 
 ## Paleidimas kompiuteryje
 
@@ -38,8 +38,8 @@ Nereikia kūrimo žingsnio, duomenų bazių paslaugos, mokamų API ar išorinių
 ## Keitimas
 
 - Pagrindinis katalogas: `index.html`, stiliai: `assets/site.css`, paieška: `assets/catalog.js`.
-- Kiekvieno projekto kodas yra jo aplanke. Nuorodos yra santykinės.
-- Kalbos modelio logika: `vdslm/engine.mjs`; skaičiavimai: `vdslm/worker.mjs`; sąsaja: `vdslm/app.js`.
+- Kiekvieno projekto kodas yra jo aplanke. Nuorodos yra santykinės. Visos priemonės laikomos po `/priemones/`, kad jų adresų neužgožtų senų atskirų saugyklų „GitHub Pages“ svetainės.
+- Kalbos modelio logika: `priemones/vdslm/engine.mjs`; skaičiavimai: `priemones/vdslm/worker.mjs`; sąsaja: `priemones/vdslm/app.js`.
 - Rašto darbo temų bendras peržiūros kodas: `assets/tour.js` ir `assets/tour.css`.
 - Keisdamas „LaTeX“ šabloną atnaujink ir `downloads/brandos-darbo-sablonas.zip`. Šablono PDF kompiliavimas nepriklauso svetainės paleidimui.
 

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>Procesoriaus simuliatorius</title>
+    <link rel="stylesheet" href="styles.css">
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="../../assets/tool-nav.css"><link rel="icon" href="../../assets/favicon.svg"></head>
+<body>
+    <h1>Procesoriaus simuliatorius</h1>
+
+    <!-- Control Buttons -->
+    <div class="controls">
+        <button id="runButton">Vykdyti</button>
+        <button id="stepButton">Žingsnis</button>
+        <button id="resetButton">Atkurti</button>
+        <button id="toggleEditorButton">Kodo redaktorius</button>
+        <label for="speedSlider">Pauzė tarp komandų (ms):</label>
+        <input type="range" id="speedSlider" min="100" max="2000" value="500">
+        <button id="helpButton">Pagalba</button>
+    </div>
+
+    <!-- Main Grid Container -->
+    <div class="main-grid">
+        <!-- Left Column: Code Editor (optional), Memory Input, Registers, PC, IR, Output -->
+        <div class="left-column">
+            <!-- Code Editor with Line Numbers -->
+            <div id="codeEditorContainer" style="display: none;">
+                <div class="code-editor">
+                    <div class="line-numbers" id="lineNumbers"></div>
+                    <textarea aria-label="Programos kodas" id="assemblyInput" placeholder="Įrašyk programos kodą…"></textarea>
+                </div>
+                <button id="assembleButton">Surinkti kodą</button>
+            </div>
+
+            <!-- Memory Input Panel -->
+            <div class="panel">
+                <h2>Atminties įvedimas</h2>
+                <textarea aria-label="Atminties duomenys" id="memoryInput" placeholder="Įrašyk atminties duomenis, pvz.: [00]: 0F"></textarea>
+                <button id="loadMemoryButton">Įkelti į atmintį</button>
+            </div>
+
+            <!-- Registers, PC, IR, Flags, and Output Field -->
+            <div class="status-bar">
+                <div class="panel compact">
+                    <h2>Registrai</h2>
+                    <table id="registersTable">
+                        <tr><th>Registras</th><th>Reikšmė</th></tr>
+                        <tr><td>PC</td><td id="PC">00</td></tr>
+                        <tr><td>IR</td><td id="IR"></td></tr>
+                        <tr><td>R0</td><td id="R0">00</td></tr>
+                        <tr><td>R1</td><td id="R1">00</td></tr>
+                        <tr><td>R2</td><td id="R2">00</td></tr>
+                        <tr><td>ZF</td><td id="ZF">0</td></tr>
+                        <tr><td>SF</td><td id="SF">0</td></tr>
+                    </table>
+                </div>
+
+                <div class="panel compact">
+                    <h2>Išvestis</h2>
+                    <div id="outputField"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Memory Display -->
+        <div class="panel memory-panel">
+            <h2>Atmintis</h2>
+            <div id="memoryContainer"></div>
+        </div>
+    </div>
+
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" id="closeHelp" aria-label="Uždaryti pagalbą">&times;</button>
+            <h2>Pagalba</h2>
+            <div class="modal-body">
+<p>Simuliatorius turi 256 baitus atminties, tris bendrosios paskirties registrus ir paprastą komandų rinkinį. Atminties adresai ir reikšmės rodomi šešioliktainiu formatu (00–FF).</p>
+<h3>Kaip pradėti</h3><p>Atverk kodo redaktorių, įrašyk programą ir spausk „Surinkti kodą“. „Vykdyti“ paleidžia programą, o „Žingsnis“ vykdo po vieną komandą. „Atkurti“ iš naujo nustato registrus ir išvalo išvestį; atmintyje įkeltas kodas išlieka.</p>
+<h3>Registrai ir požymiai</h3><ul><li><strong>PC</strong> – kitos vykdomos komandos adresas (komandų skaitiklis).</li><li><strong>IR</strong> – vykdomos komandos registras.</li><li><strong>R0, R1, R2</strong> – duomenų registrai.</li><li><strong>ZF</strong> – nulinio rezultato požymis.</li><li><strong>SF</strong> – ženklo požymis (vyriausias rezultato bitas).</li></ul>
+<h3>Atminties įvedimas</h3><p>Galima įrašyti reikšmes tiesiai: vienoje eilutėje nurodyk adresą ir reikšmę, pavyzdžiui, <code>[00]: 10</code>. Ir adresas, ir reikšmė yra šešioliktainiai.</p>
+<h3>Komandų rinkinys</h3><p><code>REG</code> – registras, <code>IMM</code> – tiesioginė reikšmė, <code>ADDR</code> – atminties adresas. Laužtiniai skliaustai žymi kreipimąsi į atmintį.</p><table>
+                    <tr>
+                        <th>Komanda</th>
+                        <th>Formatas</th>
+                        <th>Operacijos kodas</th>
+                    </tr>
+                    <!-- Include all instructions with opcodes -->
+                    <tr><td>MOV</td><td>REG, IMM</td><td>0x10</td></tr>
+                    <tr><td>MOV</td><td>REG, REG</td><td>0x11</td></tr>
+                    <tr><td>MOV</td><td>REG, [ADDR]</td><td>0x12</td></tr>
+                    <tr><td>MOV</td><td>[ADDR], REG</td><td>0x13</td></tr>
+                    <tr><td>ADD</td><td>REG, IMM</td><td>0x20</td></tr>
+                    <tr><td>ADD</td><td>REG, REG</td><td>0x21</td></tr>
+                    <tr><td>ADD</td><td>REG, [ADDR]</td><td>0x22</td></tr>
+                    <tr><td>SUB</td><td>REG, IMM</td><td>0x30</td></tr>
+                    <tr><td>SUB</td><td>REG, REG</td><td>0x31</td></tr>
+                    <tr><td>SUB</td><td>REG, [ADDR]</td><td>0x32</td></tr>
+                    <tr><td>CMP</td><td>REG, IMM</td><td>0x70</td></tr>
+                    <tr><td>CMP</td><td>REG, REG</td><td>0x71</td></tr>
+                    <tr><td>CMP</td><td>REG, [ADDR]</td><td>0x72</td></tr>
+                    <tr><td>JMP</td><td>ADDR</td><td>0x60</td></tr>
+                    <tr><td>JE</td><td>ADDR</td><td>0x80</td></tr>
+                    <tr><td>JNE</td><td>ADDR</td><td>0x81</td></tr>
+                    <tr><td>JG</td><td>ADDR</td><td>0x82</td></tr>
+                    <tr><td>JL</td><td>ADDR</td><td>0x83</td></tr>
+                    <tr><td>INC</td><td>REG</td><td>0x40</td></tr>
+                    <tr><td>DEC</td><td>REG</td><td>0x41</td></tr>
+                    <tr><td>OUT</td><td>REG</td><td>0x50</td></tr>
+                    <tr><td>HLT</td><td></td><td>0xFF</td></tr>
+                </table>
+<p><code>MOV</code> kopijuoja, <code>ADD</code> sudeda, <code>SUB</code> atima, <code>CMP</code> palygina, <code>INC</code> ir <code>DEC</code> keičia vienetu. <code>OUT</code> išveda registro reikšmę, o <code>HLT</code> sustabdo programą. <code>JMP</code> šoka besąlygiškai, <code>JE</code> – kai lygu, <code>JNE</code> – kai nelygu, <code>JG</code> – kai didesnis, <code>JL</code> – kai mažesnis pagal simuliatoriaus ZF ir SF požymius.</p>
+<h3>Pavyzdys: sudėtis</h3><pre>MOV R0, 02  ; Įrašome 2
+ADD R0, 03  ; Pridedame 3
+OUT R0      ; Išvedame rezultatą 5
+HLT         ; Baigiame programą</pre>
+<h3>Pavyzdys: reikšmė atmintyje</h3><pre>[00]: 10
+[01]: 00
+[02]: 0A
+[03]: 50
+[04]: 00
+[05]: FF</pre><p>Ši programa į R0 įrašo 0A (dešimtainį 10), jį išveda ir baigia darbą.</p>
+<h3>Spalvos</h3><p><span class="legend opcode-highlight">Mėlyna</span> pažymi vykdomos komandos kodą. <span class="legend change-highlight">Geltona</span> pažymi pasikeitusius registrus, požymius ir atmintį.</p>
+<h3>Užduotys</h3><ol><li>Sudėk dvi reikšmes ir išvesk rezultatą.</li><li>Perkelk 0F iš R1 į R2 ir išvesk R2.</li><li>Sukurk ciklą, kuris išveda skaičius nuo 1 iki 5.</li></ol><h3>Jei programa neveikia</h3><p>Patikrink registrų vardus, komandų formatą, žymas ir šešioliktaines reikšmes. Tai supaprastintas mokomasis procesorius; jo komandos neskirtos tikram kompiuteriui.</p>
+</div></div></div>
+    
+
+    <!-- Include JavaScript File -->
+    <script src="script.js"></script>
+<a id="lab-home" href="../../index.html#priemones">← Visos priemonės</a></body>
+</html>

@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="lt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Septynių segmentų ekranėlis</title>
+  <style>
+    :root{
+      --bg:#f5f6f7; --text:#111; --muted:#6b7280; --panel:#fff; --border:#e5e7eb;
+      --bezel:#202226; --lcd:#0A0A0B; --stroke:#2A2C31; --accent:#111; --red:#E53935;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"}
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    h1{font-weight:800;font-size:22px;margin:0}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+    .grid{display:grid;gap:24px}
+    @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);padding:16px}
+    label{font-size:13px;color:var(--muted);display:block}
+    select,input[type="text"]{width:100%;border:1px solid var(--border);border-radius:8px;padding:8px}
+    .btn{border:0;border-radius:8px;padding:6px 10px;cursor:pointer}
+    .btn-ghost{background:#e5e7eb}
+    .btn-accent{background:var(--accent);color:#fff}
+    .btn-warn{background:#fee2e2;color:#991b1b}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .right{margin-left:auto}
+    .pill{border:1px solid var(--border);background:#f8f9fa;color:#111;border-radius:8px;padding:2px 8px}
+    .small{font-size:12px;color:var(--muted)}
+    .hint{font-size:12px;color:var(--muted);margin-top:6px}
+    svg{display:block}
+  body{padding-bottom:65px}</style>
+<link rel="stylesheet" href="../../assets/tool-nav.css"><link rel="icon" href="../../assets/favicon.svg"></head>
+<body>
+  <div class="container">
+    <h1>Septynių segmentų ekranėlis</h1>
+    <p class="mono" style="margin:.25rem 0;color:var(--muted)">Tvarka: dp.a.b.c.d.e.f.g (dp pirmas)</p>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="col-left">
+        <div class="card">
+          <label for="bitsSelect">Bitų kiekis vienam segmentui</label>
+          <select id="bitsSelect">
+            <option value="1">1 (išj/įj)</option>
+            <option value="2">2 (juoda/R/G/B)</option>
+            <option value="3">3 (RGB bitai)</option>
+            <option value="4">4 (raudonos intensyvumas)</option>
+          </select>
+          <div class="row" style="margin-top:8px">
+            <input id="labelsToggle" type="checkbox" checked />
+            <label for="labelsToggle" style="margin:0">Rodyti segmentų raides</label>
+          </div>
+          <p id="bitExplain" class="hint"></p>
+          <p class="hint">Segmentus galima spausti – reikšmė cikliškai keičiasi 0 → … → didžiausia reikšmė.</p>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">Pavyzdžiai</h3>
+          <div class="row">
+            <button aria-label="Ankstesnis pavyzdys" id="exPrev" class="btn btn-ghost">◀</button>
+            <button id="exApply" class="btn btn-accent">Taikyti</button>
+            <button aria-label="Kitas pavyzdys" id="exNext" class="btn btn-ghost">▶</button>
+            <span id="exLabel" class="small"></span>
+            <button id="resetBtn" class="btn btn-warn right">Atstatyti</button>
+          </div>
+        </div>
+
+        <div class="card mono">
+          <div class="small">Eilė: <span id="order">dp.a.b.c.d.e.f.g</span></div>
+          <div id="perSeg" class="row" style="margin-top:8px"></div>
+          <div style="margin-top:8px">Dvejetainis (po 4): <span id="binGrouped"></span></div>
+          <div style="margin-top:4px">Šešioliktainis: <b id="hexOut">0x0</b></div>
+          <div class="row" style="margin-top:8px">
+            <input aria-label="Šešioliktainis kodas" id="hexIn" type="text" placeholder="Įvesk šešioliktainį kodą ir spausk įvesties klavišą arba spausk ‘Nustatyti’" />
+            <span id="hexCount" class="small"></span>
+            <button id="hexApply" class="btn btn-accent">Nustatyti</button>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <input aria-label="Dvejetainis kodas" id="binIn" type="text" placeholder="Įklijuok dvejetainį (0/1) ir spausk įvesties klavišą arba ‘Nustatyti’" />
+            <span id="binCount" class="small"></span>
+            <button id="binApply" class="btn btn-accent">Nustatyti</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-right">
+        <div class="card" style="display:flex;align-items:center;justify-content:center">
+          <div id="displayHolder"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ===== Model & helpers =====
+  const SEGMENTS = ["dp","a","b","c","d","e","f","g"]; // order
+  const DIGIT_PRESETS = {"0":["a","b","c","d","e","f"],"1":["b","c"],"2":["a","b","g","e","d"],"3":["a","b","g","c","d"],"4":["f","g","b","c"],"5":["a","f","g","c","d"],"6":["a","f","g","e","c","d"],"7":["a","b","c"],"8":["a","b","c","d","e","f","g"],"9":["a","b","c","d","f","g"]};
+
+  function toBin(n, width){ return n.toString(2).padStart(width, "0"); }
+  function colorForValue(value, bitsPerSegment, off="#141517"){
+    if(bitsPerSegment===1) return value?"#E53935":off;
+    if(bitsPerSegment===2){ return [off,"#FF0000","#00FF00","#0000FF"][value]||off; }
+    if(bitsPerSegment===3){ const r=(value&4)?255:0, g=(value&2)?255:0, b=(value&1)?255:0; return `rgb(${r},${g},${b})`; }
+    const r=Math.round(255*(value/15)); return `rgb(${r},0,0)`; // 4-bit red intensity
+  }
+
+  // geometry helpers
+  const BAR=12, W=100, H=160;
+  function horizBar(cx, cy, len, thick){ const r=thick/2,l=len/2,tip=thick; return [[cx-l+tip,cy-r],[cx+l-tip,cy-r],[cx+l,cy],[cx+l-tip,cy+r],[cx-l+tip,cy+r],[cx-l,cy]]; }
+  function vertBar(cx, cy, len, thick){ const r=thick/2,l=len/2,tip=thick; return [[cx-r,cy-l+tip],[cx-r,cy+l-tip],[cx,cy+l],[cx+r,cy+l-tip],[cx+r,cy-l+tip],[cx,cy-l]]; }
+  function makeSegmentPolys(){
+    return {
+      a:  horizBar(W/2, 20, 60, BAR),
+      b:  vertBar(W-20, 50, 50, BAR),
+      c:  vertBar(W-20,110, 50, BAR),
+      d:  horizBar(W/2,H-20, 60, BAR),
+      e:  vertBar(20, 110, 50, BAR),
+      f:  vertBar(20,  50, 50, BAR),
+      g:  horizBar(W/2, H/2, 60, BAR),
+      dp: [[80,145],[88,145],[88,153],[80,153]]
+    };
+  }
+
+  // ===== State =====
+  let bitsPerSegment = 1;
+  let values = Object.fromEntries(SEGMENTS.map(s=>[s,0]));
+  let examplePages = [];
+  let exampleIdx = 0;
+  let showLabels = true;
+
+  // ===== DOM refs =====
+  const bitsSelect = document.getElementById('bitsSelect');
+  const labelsToggle = document.getElementById('labelsToggle');
+  const bitExplain = document.getElementById('bitExplain');
+  const exPrev = document.getElementById('exPrev');
+  const exApply = document.getElementById('exApply');
+  const exNext = document.getElementById('exNext');
+  const exLabel = document.getElementById('exLabel');
+  const resetBtn = document.getElementById('resetBtn');
+  const perSeg = document.getElementById('perSeg');
+  const binGrouped = document.getElementById('binGrouped');
+  const hexOut = document.getElementById('hexOut');
+  const hexIn = document.getElementById('hexIn');
+  const hexCount = document.getElementById('hexCount');
+  const hexApply = document.getElementById('hexApply');
+  const binIn = document.getElementById('binIn');
+  const binCount = document.getElementById('binCount');
+  const binApply = document.getElementById('binApply');
+  const displayHolder = document.getElementById('displayHolder');
+
+  // ===== Build Display SVG =====
+  const polys = makeSegmentPolys();
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS,'svg');
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.setAttribute('width','280'); svg.setAttribute('height', String(280*H/W));
+  svg.style.borderRadius = '12px';
+  svg.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
+
+  function addRect(x,y,w,h,rx,fill){
+    const r = document.createElementNS(svgNS,'rect');
+    r.setAttribute('x',x); r.setAttribute('y',y); r.setAttribute('width',w); r.setAttribute('height',h);
+    r.setAttribute('rx',rx); r.setAttribute('ry',rx); r.setAttribute('fill',fill);
+    svg.appendChild(r);
+  }
+  addRect(0,0,W,H,12,'#202226');
+  addRect(6,6,W-12,H-12,10,'#0A0A0B');
+
+  const polyElems = {};
+  for(const seg of SEGMENTS){
+    const pts = polys[seg].map(p=>p.join(',')).join(' ');
+    const poly = document.createElementNS(svgNS,'polygon');
+    poly.setAttribute('points', pts);
+    poly.setAttribute('stroke', '#2A2C31');
+    poly.setAttribute('stroke-width', '1');
+    poly.style.cursor = 'pointer';
+    poly.addEventListener('click', ()=>{ cycle(seg); });
+    svg.appendChild(poly);
+    polyElems[seg] = poly;
+  }
+
+  const labelPos = { A:[W/2,10], B:[W-10,45], C:[W-10,115], D:[W/2,H-5], E:[10,115], F:[10,45], G:[W/2,H/2+5], DP:[85,157] };
+  const labelElems = {};
+  for(const [lab,[x,y]] of Object.entries(labelPos)){
+    const t = document.createElementNS(svgNS,'text');
+    t.setAttribute('x',x); t.setAttribute('y',y); t.setAttribute('text-anchor','middle');
+    t.setAttribute('fill','white'); t.setAttribute('font-size','8'); t.setAttribute('font-family','monospace');
+    t.textContent = lab; svg.appendChild(t); labelElems[lab]=t;
+  }
+  displayHolder.appendChild(svg);
+
+  // ===== UI logic =====
+  const BIT_EXPLANATIONS = {
+    1:"1 bitas – 0: išjungta, 1: įjungta (raudona)",
+    2:"2 bitai – 00: juoda, 01: raudona, 10: žalia, 11: mėlyna",
+    3:"3 bitai – kiekvienas bitas valdo RGB kanalą: R (4), G (2), B (1)",
+    4:"4 bitai – raudonos spalvos intensyvumas (0b0000: juoda → 0b1111: ryškiai raudona)"
+  };
+
+  function maxVal(){ return Math.pow(2,bitsPerSegment)-1; }
+  function totalBits(){ return SEGMENTS.length * bitsPerSegment; }
+  function needNibbles(){ return Math.ceil(totalBits()/4); }
+
+  function buildExamplePages(){
+    const pages=[]; const all=v=>Object.fromEntries(SEGMENTS.map(s=>[s,v]));
+    if(bitsPerSegment===1){
+      for(let d=0; d<=9; d++){
+        const segs = DIGIT_PRESETS[String(d)]||[];
+        const vals = Object.fromEntries(SEGMENTS.map(s=>[s, segs.includes(s)?1:0]));
+        pages.push({title:`Skaitmuo ${d}`, values:vals});
+      }
+    }
+    if(bitsPerSegment===2){
+      pages.push({title:"Visi 00 (juoda)", values: all(0)});
+      pages.push({title:"Visi 01 (raudona)", values: all(1)});
+      pages.push({title:"Visi 10 (žalia)", values: all(2)});
+      pages.push({title:"Visi 11 (mėlyna)", values: all(3)});
+      const pattern=[1,2,3,1,2,3,1,0];
+      pages.push({title:"Juostelės 01/10/11", values:Object.fromEntries(SEGMENTS.map((s,i)=>[s,pattern[i%pattern.length]]))});
+    }
+    if(bitsPerSegment===3){
+      for(let v=0; v<8; v++){ pages.push({title:`Visi ${v.toString(2).padStart(3,'0')}`, values: all(v)}); }
+      pages.push({title:"Kanalų ciklas 000…111", values:Object.fromEntries(SEGMENTS.map((s,i)=>[s, i%8]))});
+    }
+    if(bitsPerSegment===4){
+      [0,4,8,12,15].forEach(v=>pages.push({title:`Visi ${v.toString(2).padStart(4,'0')}`, values: all(v)}));
+      pages.push({title:"Gradientas 0000→1111", values:Object.fromEntries(SEGMENTS.map((s,i)=>[s, i%16]))});
+    }
+    return pages;
+  }
+
+  // Renderers
+  function renderDisplay(){
+    for(const seg of SEGMENTS){ polyElems[seg].setAttribute('fill', colorForValue(values[seg]||0, bitsPerSegment)); }
+    for(const [lab,el] of Object.entries(labelElems)){ el.style.display = showLabels? 'block':'none'; }
+  }
+  function renderPerSegmentBits(){
+    perSeg.innerHTML='';
+    const w = bitsPerSegment;
+    for(const seg of SEGMENTS){
+      const span = document.createElement('span'); span.className='pill mono';
+      const name = document.createElement('span'); name.style.color='var(--muted)'; name.style.marginRight='6px'; name.textContent=seg.toUpperCase();
+      const val = document.createElement('span'); val.textContent = toBin(values[seg]||0, w);
+      span.appendChild(name); span.appendChild(val); perSeg.appendChild(span);
+    }
+  }
+  function renderBinHex(){
+    const w = bitsPerSegment; const blocks = SEGMENTS.map(s=>toBin(values[s]||0, w));
+    const bin = blocks.join('');
+    const need = needNibbles();
+    const padded = bin.padStart(need*4,'0');
+    binGrouped.textContent = padded.replace(/(.{4})/g,'$1 ').trim();
+    const hex = (padded.match(/.{1,4}/g)||[]).map(n=>parseInt(n,2).toString(16).toUpperCase()).join('') || '0';
+    hexOut.textContent = '0x'+hex;
+    // placeholders and counters
+    hexIn.placeholder = `Įvesk šešioliktainį kodą (iki ${need} skaitmenys) ir spausk įvesties klavišą arba ‘Nustatyti’`;
+    hexCount.textContent = `${hexIn.value.length}/${need}`;
+    const bitsMax = totalBits();
+    binIn.placeholder = `Įklijuok dvejetainį (iki ${bitsMax} bitų) ir spausk įvesties klavišą arba ‘Nustatyti’`;
+    const binLen = (binIn.value.match(/[01]/g)||[]).length;
+    binCount.textContent = `${binLen}/${bitsMax}`;
+  }
+  function renderExamples(){
+    examplePages = buildExamplePages();
+    exampleIdx = Math.min(exampleIdx, Math.max(0, examplePages.length-1));
+    exLabel.textContent = examplePages.length ? `(${exampleIdx+1}/${examplePages.length}) ${examplePages[exampleIdx].title}` : 'Nėra pavyzdžių';
+  }
+  function renderExplain(){ bitExplain.textContent = BIT_EXPLANATIONS[bitsPerSegment]; }
+
+  function renderAll(){ renderDisplay(); renderPerSegmentBits(); renderBinHex(); renderExamples(); renderExplain(); }
+
+  // Interactions
+  function cycle(seg){ values[seg] = ((values[seg]||0)+1) % (maxVal()+1); renderAll(); }
+  function resetAll(){ values = Object.fromEntries(SEGMENTS.map(s=>[s,0])); hexIn.value=''; binIn.value=''; renderAll(); }
+  function applyCurrentExample(){ if(examplePages.length){ values = {...examplePages[exampleIdx].values}; renderAll(); } }
+  function nextExample(){ if(!examplePages.length) return; exampleIdx = (exampleIdx+1)%examplePages.length; applyCurrentExample(); }
+  function prevExample(){ if(!examplePages.length) return; exampleIdx = (exampleIdx-1+examplePages.length)%examplePages.length; applyCurrentExample(); }
+
+  function onBitsChange(v){ bitsPerSegment = parseInt(v,10)||1; hexIn.value=''; binIn.value=''; renderAll(); }
+
+  function onHexInputChange(){ const maxN=needNibbles(); const cleaned = hexIn.value.replace(/[^0-9a-fA-F]/g,'').slice(0,maxN); if(cleaned!==hexIn.value){ hexIn.value = cleaned; } renderBinHex(); }
+  function onHexEnter(e){ if(e.key==='Enter' && hexIn.value.length>0){ loadFromHex(hexIn.value); } }
+  function loadFromHex(input){ const need=needNibbles(); const clean=(input||'').replace(/[^0-9a-fA-F]/g,''); if(!clean) return; const pHex=clean.slice(-need).padStart(need,'0'); const bin=pHex.split('').map(ch=>parseInt(ch,16).toString(2).padStart(4,'0')).join(''); const slice=bin.slice(-(totalBits())); const next={}; SEGMENTS.forEach((seg,i)=>{ const start=i*bitsPerSegment; next[seg]=parseInt(slice.slice(start,start+bitsPerSegment)||'0',2); }); values=next; renderAll(); }
+
+  function onBinInputChange(){ const maxBits=totalBits(); const cleaned=(binIn.value||'').replace(/[^01]/g,'').slice(0,maxBits); if(cleaned!==binIn.value){ binIn.value=cleaned; } renderBinHex(); }
+  function onBinEnter(e){ if(e.key==='Enter' && (binIn.value||'').length>0){ loadFromBin(binIn.value); } }
+  function loadFromBin(input){ const maxBits=totalBits(); const clean=(input||'').replace(/[^01]/g,''); if(!clean) return; const pBin=clean.slice(-maxBits).padStart(maxBits,'0'); const next={}; SEGMENTS.forEach((seg,i)=>{ const start=i*bitsPerSegment; next[seg]=parseInt(pBin.slice(start,start+bitsPerSegment)||'0',2); }); values=next; renderAll(); }
+
+  // Wire events
+  bitsSelect.addEventListener('change', e=>onBitsChange(e.target.value));
+  labelsToggle.addEventListener('change', e=>{ showLabels = e.target.checked; renderDisplay(); });
+  exPrev.addEventListener('click', prevExample);
+  exApply.addEventListener('click', applyCurrentExample);
+  exNext.addEventListener('click', nextExample);
+  resetBtn.addEventListener('click', resetAll);
+  hexIn.addEventListener('input', onHexInputChange);
+  hexIn.addEventListener('keydown', onHexEnter);
+  hexApply.addEventListener('click', ()=>{ if(hexIn.value.length>0) loadFromHex(hexIn.value); });
+  binIn.addEventListener('input', onBinInputChange);
+  binIn.addEventListener('keydown', onBinEnter);
+  binApply.addEventListener('click', ()=>{ if(binIn.value.length>0) loadFromBin(binIn.value); });
+
+  // Initial
+  renderAll();
+  </script>
+<a id="lab-home" href="../../index.html#priemones">← Visos priemonės</a></body>
+</html>
