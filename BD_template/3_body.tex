@@ -1,0 +1,65 @@
+\newpage
+\section{Dėstomoji dalis}
+\textit{Tai dėstymo dalies aprašymas, kuriame įterpiama įterpiama temos apžvalga bei tiriamoji dalis. Temos apžvalgoje aprašoma idėjos brandos darbui paieška bei informacinių šaltinių apibendrinimas. Na, o tiriamosios dalies apžvalgoje aprašomas tiriamojo darbo metodas, darbo eigos aprašymas, tiriamojo darbo surinktų duomenų analizė bei tiriamojo darbo apibendrinimas.}
+
+Pavyzdys, kaip veikia citavimas \cite{brandos_2019}. Dar vienas šaltinis \cite{eberson_nacionaline_nodate}. Kokia tais matematinė formulė – $y=f(x)=x^2$. Ir dar vienas, šiek tiek kitoks šaltinis \cite{tupinis_inovacijos_2022}. Toliau bus matematinė formulė, kuri yra itin svarbi, todėl centruota ir išskirta.
+
+$$f_{n}(x)=x_{n}^{2}-n$$
+
+\subsection{Temos apžvalga - literatūros analizė}
+\subsubsection{Analizės dalis nr. 1}
+\lipsum[4]
+\begin{figure}[H]
+    \centering
+    \includegraphics{media/sample-img}
+    \caption{Iliustracijos aprašymas}
+    \label{fig:laikina_iliustracija}
+\end{figure}
+\subsubsection{Analizės dalis nr. 2}
+\lipsum[4]
+Čia galime įterpti kodą tekste \verb|print(f'Python kodas')|. Tačiau galime įterpti ir kodo bloką.
+\begin{verbatim}
+def suma(x, y):
+  return x+y
+  
+x, y = 10, 20
+print(suma(x, y))
+\end{verbatim}
+Kaip galima pastebėti, kodas nėra hilight'intas. Jei to reikia, \newline galime pasinaudoti paketu \verb|listings|:
+\begin{lstlisting}[language=Python, caption=Pavyzdinis kodas]
+def suma(x, y):
+  return x+y
+  
+x, y = 10, 20
+print(suma(x, y))
+\end{lstlisting}
+
+\subsection{Tyrimo apžvalga - tyrimo aprašymas ir rezultatai}
+\subsubsection{Tyrimo organizavimas}
+\lipsum[5]
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{X} & \textbf{Y} \\
+        \hline
+        -2 & -4 \\
+        -1 & -2 \\
+        0 & 0 \\
+        1 & 2 \\
+        2 & 4 \\
+        \hline
+    \end{tabular}
+    \caption{Lentelės aprašymas}
+    \label{tab:laikina_lentele}
+\end{table}
+\subsubsection{Tyrimo eiga}
+\lipsum[4]
+\begin{figure}[H]
+    \centering
+    \includegraphics{media/sample-img}
+    \caption{Iliustracijos aprašymas}
+    \label{fig:laikina_iliustracija_2}
+\end{figure}
+\subsubsection{Tyrimo rezultatai}
+\lipsum[5]

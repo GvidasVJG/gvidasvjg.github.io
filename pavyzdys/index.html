@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="lt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#163e3c"><title>Programavimo pradžia · Informatikos laboratorija</title><link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../assets/site.css"></head><body><header class="site-header"><a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">i<span>_</span></span><span>Informatikos<br><strong>laboratorija</strong></span></a><nav aria-label="Pagrindinis meniu"><a href="../index.html#priemones">Visos priemonės <span aria-hidden="true">↗</span></a></nav></header><main class="lesson"><a class="back" href="../index.html#priemones">← Visos priemonės</a><p class="eyebrow">INFORMATIKOS LABORATORIJA</p><h1>Programavimo pradžia</h1><p class="lead">Vienas mažas pavyzdys – sąlygos, dalybos liekana ir pirmieji žingsniai su versijų kontrole.</p><div class="two-col"><section class="panel"><h2>Išbandyk „Foo Bar“</h2><p>Jei skaičius dalijasi iš 3, gausi „Foo“, iš 5 – „Bar“, iš abiejų – „Foo Bar“. Kitu atveju liks pats skaičius.</p><form id="foo-form"><label class="field" for="number">Sveikasis skaičius<input type="number" id="number" value="15" min="-1000000000" max="1000000000" step="1" required></label><button class="button">Patikrinti</button></form><p class="output" id="foo-output" role="status">Foo Bar</p></section><section class="panel"><h2>Tas pats „Python“ kalba</h2><pre># Foo Bar simple Programa
+
+# Vartotojas įveda skaičių
+# Vietoj skaičių, dalių iš 3, spausdinama "Foo".
+# Vietoj skaičių, dalių iš 5, spausdinama "Bar".
+# Vietoj skaičių, dalių iš 3 ir 5, spausdinama "Foo Bar".
+# Kitu atveju, skaičius spausdinamas nepakitęs.
+
+n = int(input("Įveskite skaičių: "))
+if n % 3 == 0 and n % 5 == 0:
+    print("Foo Bar")
+elif n % 3 == 0:
+    print("Foo")
+elif n % 5 == 0:
+    print("Bar")
+else:
+    print(n)</pre><a href="main.py" download>Atsisiųsti „Python“ pavyzdį ↓</a></section></div><section class="panel"><h2>Pabandyk pats</h2><ol><li>Rask skaičių, kuriam gausi tik „Foo“.</li><li>Paaiškink, kodėl pirmiausia tikrinama dalyba ir iš 3, ir iš 5.</li><li>Pakeisk daliklius ir palygink rezultatus.</li></ol><h3>Versijų kontrolė</h3><p>Pasidaryk šios saugyklos kopiją, pakeisk <code>pavyzdys/main.py</code> ir išsaugok pakeitimą su aiškiu aprašu. „Git“ leidžia palyginti versijas ir grįžti prie ankstesnio sprendimo.</p><p><a href="README.md">Išsamios „GitHub“ ir „Codespaces“ instrukcijos</a></p></section><script src="practice.js" defer></script></main><footer class="site-footer"><span>Gvidas Tupinis · Mokymosi priemonės</span><a href="https://github.com/GvidasVJG/gvidasvjg.github.io">Svetainės kodas ↗</a></footer></body></html>
