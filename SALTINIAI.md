@@ -25,3 +25,7 @@ Vartotojo pateiktas `modulo-clock.html`. Pridėta bendra grįžimo nuoroda ir pi
 - `assets/vendor/LICENSE`: sql.js autorių MIT licencija; naudojama 1.13.0 versija iš oficialaus npm paketo. `sql-wasm.js` ir `sql-wasm.wasm` nekoreguoti. Šaltinis: https://github.com/sql-js/sql.js/tree/v1.13.0.
 - Kitų projektų kopijoms nepriskiriama nauja bendra licencija.
 - Originaliame VDSLM projekte esantis angliškų kūrinių tekstų rinkinys ir iš jo sudarytas modelis išsaugoti; naujoje sąsajoje pagal nutylėjimą naudojamas lietuviškas mokymo pavyzdys.
+
+## Šifrų laboratorija
+
+Importuota 2026-10-07 iš vartotojo „Sites“ projekto [Šifrų laboratorija](https://cipher-lab-studio.laiskas-gvidui.chatgpt.site/), pradinio kodo versija `816aeac0bc679844561c623b3a658b58d2249d1c`. Visas pradinis `dist/index.html` perkeltas į `priemones/sifru-laboratorija/index.html`; pridėta bendra grįžimo į katalogą nuoroda. Išsaugoti visi penki šifrai, lietuviški paaiškinimai ir vaizdinės priemonės. Svetainė naudoja vietinę kopiją ir nuo „Sites“ paslaugos nepriklauso.
