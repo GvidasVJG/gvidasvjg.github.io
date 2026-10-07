@@ -6,7 +6,7 @@ test('katalogo projektai naudoja bendrą adresą, nesikertantį su senomis sveta
   const html=readFileSync(new URL('index.html',root),'utf8');
   const links=[...html.matchAll(/<h3><a href="([^"]+)"/g)].map(m=>m[1]);
   assert.equal(links.length,12);
-  assert.equal(links.filter(href=>href.startsWith('priemones/')).length,10);
+  assert.equal(links.filter(href=>href.startsWith('priemones/')).length,11);
   assert.ok(links.includes('modulo-clock.html'));
 });
 test('išsaugoti visi 175 originalūs dokumento rengimo vaizdiniai žingsniai',()=>{

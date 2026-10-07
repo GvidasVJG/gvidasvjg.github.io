@@ -1,11 +1,11 @@
 # Informatikos laboratorija
 
 Lietuviška mokymosi svetainė: **[gvidasvjg.github.io](https://gvidasvjg.github.io/)**.
-Svetainės katalogas ir vietinių priemonių failai laikomi šioje vienoje saugykloje. Atskirų projektų klonuoti nereikia. „Šifrų laboratorija“ atveriama atskiroje svetainėje per katalogo nuorodą.
+Svetainės katalogas ir visų priemonių failai laikomi šioje vienoje saugykloje. Atskirų projektų klonuoti nereikia.
 
 ## Priemonės
 
-| Aplankas, failas arba nuoroda | Turinys |
+| Aplankas arba failas | Turinys |
 | --- | --- |
 | `priemones/mastermind/` | Spalvų kodo spėjimo žaidimas |
 | `priemones/nim.ai/` | Degtukų žaidimas su besimokančiu DI |
@@ -18,7 +18,7 @@ Svetainės katalogas ir vietinių priemonių failai laikomi šioje vienoje saugy
 | `priemones/edu-db/` | SQL laboratorija ir originali SQLite bazė |
 | `priemones/report-template-vjg/` | 13 vaizdinių dokumento formatavimo temų |
 | `priemones/BD_template/` | Kelių failų „LaTeX“ brandos darbo šablonas |
-| [Šifrų laboratorija](https://cipher-lab-studio.laiskas-gvidui.chatgpt.site/) | Cezario, Vigenère’o, Enigmos ir perstatos šifrai (išorinė priemonė) |
+| `priemones/sifru-laboratorija/` | Cezario, Vigenère’o, Enigmos, stulpelinis ir zigzago šifrai su vaizdiniais paaiškinimais |
 
 ## Paleidimas kompiuteryje
 
@@ -39,7 +39,8 @@ Nereikia kūrimo žingsnio, duomenų bazių paslaugos, mokamų API ar išorinių
 ## Keitimas
 
 - Pagrindinis katalogas: `index.html`, stiliai: `assets/site.css`, paieška: `assets/catalog.js`.
-- Vietinių projektų kodas yra jų aplankuose. Vidinės nuorodos yra santykinės. Projektai laikomi po `/priemones/`, kad jų adresų neužgožtų senų atskirų saugyklų „GitHub Pages“ svetainės; modulio laikrodis yra šakniniame aplanke. „Šifrų laboratorijos“ nuoroda veda į jos atskirą svetainę.
+- Vietinių projektų kodas yra jų aplankuose. Vidinės nuorodos yra santykinės. Projektai laikomi po `/priemones/`, kad jų adresų neužgožtų senų atskirų saugyklų „GitHub Pages“ svetainės; modulio laikrodis yra šakniniame aplanke.
+- „Šifrų laboratorijos“ sąsaja, stiliai ir šifrų logika: `priemones/sifru-laboratorija/index.html`. Visi skaičiavimai atliekami naršyklėje; išorinių paslaugų ar prisijungimo nereikia.
 - Kalbos modelio logika: `priemones/vdslm/engine.mjs`; skaičiavimai: `priemones/vdslm/worker.mjs`; sąsaja: `priemones/vdslm/app.js`.
 - Rašto darbo temų bendras peržiūros kodas: `assets/tour.js` ir `assets/tour.css`.
 - Keisdamas „LaTeX“ šabloną atnaujink ir `downloads/brandos-darbo-sablonas.zip`. Šablono PDF kompiliavimas nepriklauso svetainės paleidimui.
