@@ -6,12 +6,12 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
  const failures=[];page.on('pageerror',e=>failures.push(page.url()+': '+e.message));page.on('response',r=>{if(r.status()>=400)failures.push(r.status()+' '+r.url());});page.on('dialog',d=>d.accept());
  const base=process.env.TEST_BASE_URL || 'http://127.0.0.1:4173';
  const output=path.resolve(__dirname,'../test-results');fs.mkdirSync(output,{recursive:true});
- await page.goto(base);assert.equal(await page.locator('.tool-card:visible').count(),11);
+ await page.goto(base);assert.equal(await page.locator('.tool-card:visible').count(),12);
  await page.getByRole('button',{name:'Dirbtinis intelektas',exact:true}).click();assert.equal(await page.locator('.tool-card:visible').count(),2);
  await page.getByRole('button',{name:'Visos priemonės',exact:true}).click();await page.locator('#search').fill('sablonas');assert.equal(await page.locator('.tool-card:visible').count(),1);
  await page.locator('#search').fill('nerandamasxyz');assert.equal(await page.locator('#empty').isVisible(),true);await page.locator('#clear-filters').click();
  await page.screenshot({path:path.join(output,'home-desktop.png'),fullPage:true});
- console.log('Katalogas: 11 priemonių, filtrai ir lietuviška paieška veikia.');
+ console.log('Katalogas: 12 priemonių, filtrai ir lietuviška paieška veikia.');
  await page.goto(base+'/priemones/vdslm/');await page.locator('#train').click();await page.locator('#generate:enabled').waitFor();
  await page.locator('#seed').fill('mokinys');await page.locator('#length').fill('30');await page.locator('#generate').click();await page.locator('#download:enabled').waitFor();assert.ok((await page.locator('#generated').textContent()).length>30);
  await page.locator('#seed').fill('mokinysx');await page.locator('#inspect').click();await page.waitForFunction(()=>document.getElementById('prob-caption').textContent.includes('panašiausias'));

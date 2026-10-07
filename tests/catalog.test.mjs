@@ -5,7 +5,7 @@ const root=new URL('../',import.meta.url);
 test('katalogo projektai naudoja bendrą adresą, nesikertantį su senomis svetainėmis',()=>{
   const html=readFileSync(new URL('index.html',root),'utf8');
   const links=[...html.matchAll(/<h3><a href="([^"]+)"/g)].map(m=>m[1]);
-  assert.equal(links.length,11);
+  assert.equal(links.length,12);
   assert.equal(links.filter(href=>href.startsWith('priemones/')).length,10);
   assert.ok(links.includes('modulo-clock.html'));
 });
